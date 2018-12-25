@@ -24,9 +24,9 @@ Example for Feign Client
 Version and Tenant attributes are expected to be present in request's header (e.g. injected by ingress gateway)
 
 
-Map<String, String> attrs = new HashMap<>();
+`Map<String, String> attrs = new HashMap<>();
 attrs.put("version",  ((ServletRequestAttributes) RequestContextHolder.
         currentRequestAttributes()).getRequest().getHeader("version"));
 attrs.put("tenant",  ((ServletRequestAttributes) RequestContextHolder.
         currentRequestAttributes()).getRequest().getHeader("tenant"));
-RequestContextHolder.currentRequestAttributes().setAttribute("filteringAttributes", attrs, 0);
+RequestContextHolder.currentRequestAttributes().setAttribute("filteringAttributes", attrs, 0);`
