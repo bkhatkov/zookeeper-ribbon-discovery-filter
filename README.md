@@ -2,6 +2,8 @@
 
 ## Features
 
+> Spring Cloud Zookeeper Discovery extension to filter list of servers by metadata.
+
 ## Usage
 
 ### Example - Canary Deployment
@@ -32,7 +34,7 @@ zookeeper-backend-service-demo:
 
 #### Client code
 
-Canary version and tenant are injected into request header (e.g. by ingress gateway)
+Canary version and tenant are injected into request header (e.g. by ingress gateway).
 
 ```java
 Map<String, String> attrs = new HashMap<>();
