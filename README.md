@@ -1,32 +1,47 @@
-**Zookeeper Discovery - Ribbon Rule Filtering**
+# Zookeeper Discovery - Ribbon Filter Rule (Metadata Based)
 
-Example for Feign Client
+## Features
 
-**Server application.yml**
+## Usage
 
-`spring:
+### Example - Canary Deployment
+
+Scenario - canary routing to version "2.0" of backend service belonging to "default" tenant.
+
+#### Server application.yml
+
+```
+spring:
   application:
     name: zookeeper-backend-service-demo
   cloud:
     zookeeper:
       discovery:
         metadata:
-          version: 1.0
-          tenant: default`
-          
-**Client application.yml**
+          version: 2.0
+          tenant: default
+```
 
-`zookeeper-backend-service-demo:
+#### Client application.eml
+
+```
+zookeeper-backend-service-demo:
   ribbon:
-    NFLoadBalancerRuleClassName: com.bkhatkov.spring.cloud.ribbon.rule.ZookeeperMetadataAwareRule`
-    
-**Client code (canary example)**
-Version and Tenant attributes are expected to be present in request's header (e.g. injected by ingress gateway)
+    NFLoadBalancerRuleClassName: com.bkhatkov.spring.cloud.ribbon.rule.ZookeeperMetadataAwareRule
+```
 
+#### Client code
 
-`Map<String, String> attrs = new HashMap<>();
+Canary version and tenant are injected into request header (e.g. by ingress gateway)
+
+```java
+Map<String, String> attrs = new HashMap<>();
+
 attrs.put("version",  ((ServletRequestAttributes) RequestContextHolder.
         currentRequestAttributes()).getRequest().getHeader("version"));
+
 attrs.put("tenant",  ((ServletRequestAttributes) RequestContextHolder.
         currentRequestAttributes()).getRequest().getHeader("tenant"));
-RequestContextHolder.currentRequestAttributes().setAttribute("filteringAttributes", attrs, 0);`
+
+RequestContextHolder.currentRequestAttributes().setAttribute("filteringAttributes", attrs, 0);
+```
