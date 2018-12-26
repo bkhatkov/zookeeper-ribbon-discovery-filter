@@ -2,17 +2,12 @@ package com.bkhatkov.spring.cloud.ribbon.rule;
 
 import com.bkhatkov.spring.cloud.ribbon.predicate.AbstractZookeeperDiscoveryPredicate;
 import com.bkhatkov.spring.cloud.ribbon.predicate.ZookeeperMetadataAwarePredicate;
-import com.netflix.loadbalancer.CompositePredicate;
+import com.netflix.client.config.IClientConfig;
 
 public class ZookeeperMetadataAwareRule extends AbstractZookeeperDiscoveryRule {
 
-    private CompositePredicate predicate;
-
-    public ZookeeperMetadataAwareRule() {
-        this(new ZookeeperMetadataAwarePredicate());
-    }
-
-    public ZookeeperMetadataAwareRule(AbstractZookeeperDiscoveryPredicate predicate) {
-        super(predicate);
+    @Override
+    protected AbstractZookeeperDiscoveryPredicate createZookeeperPredicate(IClientConfig clientConfig) {
+        return new ZookeeperMetadataAwarePredicate(this, clientConfig);
     }
 }

@@ -1,6 +1,7 @@
 package com.bkhatkov.spring.cloud.ribbon.rule;
 
 import com.bkhatkov.spring.cloud.ribbon.predicate.AbstractZookeeperDiscoveryPredicate;
+import com.netflix.client.config.IClientConfig;
 import com.netflix.loadbalancer.AbstractServerPredicate;
 import com.netflix.loadbalancer.AvailabilityPredicate;
 import com.netflix.loadbalancer.CompositePredicate;
@@ -8,11 +9,10 @@ import com.netflix.loadbalancer.PredicateBasedRule;
 import org.springframework.util.Assert;
 
 public abstract class AbstractZookeeperDiscoveryRule extends PredicateBasedRule {
-    private final CompositePredicate predicate;
+    private AbstractServerPredicate predicate;
 
-    public AbstractZookeeperDiscoveryRule(AbstractZookeeperDiscoveryPredicate zookeeperDiscoveryPredicate) {
-        Assert.notNull(zookeeperDiscoveryPredicate, "Parameter 'zookeeperDiscoveryPredicate' can't be null");
-        this.predicate = createCompositePredicate(zookeeperDiscoveryPredicate, new AvailabilityPredicate(this, null));
+    public AbstractZookeeperDiscoveryRule() {
+        this.predicate = createCompositePredicate(createZookeeperPredicate(null), new AvailabilityPredicate(this, null));
     }
 
     @Override
@@ -20,8 +20,19 @@ public abstract class AbstractZookeeperDiscoveryRule extends PredicateBasedRule 
         return predicate;
     }
 
-    private CompositePredicate createCompositePredicate(AbstractZookeeperDiscoveryPredicate zookeeperDiscoveryPredicate, AvailabilityPredicate availabilityPredicate) {
-        return CompositePredicate.withPredicates(zookeeperDiscoveryPredicate, availabilityPredicate)
+    private AbstractServerPredicate createCompositePredicate(AbstractZookeeperDiscoveryPredicate discoveryEnabledPredicate, AvailabilityPredicate availabilityPredicate) {
+        Assert.notNull(discoveryEnabledPredicate, "Parameter 'discoveryEnabledPredicate' can't be null");
+        return CompositePredicate.withPredicates(discoveryEnabledPredicate, availabilityPredicate)
                 .build();
     }
+
+    @Override
+    public void initWithNiwsConfig(IClientConfig clientConfig) {
+        if (clientConfig != null) {
+            this.predicate = createCompositePredicate(createZookeeperPredicate(clientConfig), new AvailabilityPredicate(this, clientConfig));
+        }
+        super.initWithNiwsConfig(clientConfig);
+    }
+
+    abstract protected AbstractZookeeperDiscoveryPredicate createZookeeperPredicate(IClientConfig clientConfig);
 }
