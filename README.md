@@ -24,26 +24,15 @@ spring:
           tenant: default
 ```
 
-#### Client application.eml
+#### Client application.yml
 
 ```
 zookeeper-backend-service-demo:
   ribbon:
     NFLoadBalancerRuleClassName: com.bkhatkov.spring.cloud.ribbon.rule.ZookeeperMetadataAwareRule
+    filteringProperties: version, tenant
 ```
 
-#### Client code
+#### Client balancing
 
 Canary version and tenant are injected into request header (e.g. by ingress gateway).
-
-```java
-Map<String, String> attrs = new HashMap<>();
-
-attrs.put("version",  ((ServletRequestAttributes) RequestContextHolder.
-        currentRequestAttributes()).getRequest().getHeader("version"));
-
-attrs.put("tenant",  ((ServletRequestAttributes) RequestContextHolder.
-        currentRequestAttributes()).getRequest().getHeader("tenant"));
-
-RequestContextHolder.currentRequestAttributes().setAttribute("filteringAttributes", attrs, 0);
-```
